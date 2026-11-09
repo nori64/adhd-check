@@ -263,7 +263,7 @@ const SYMPTOM_LABELS = {
   b9:["割り込み","思いつきをその場で口に出しやすく、会話に割り込みがちになるタイプです。"]
 };
 const OPTIONS = [
-  ["まったくない", 0], ["まれにある", 1], ["時々ある", 2], ["よくある", 3], ["とてもよくある", 4]
+  ["ない", 0], ["あまりない", 1], ["半々", 2], ["すこしある", 3], ["ある", 4]
 ];
 const PART_NAMES = { A: "第1部 ― 不注意について", B: "第2部 ― 多動性・衝動性について", C: "第3部 ― 生活への影響について" };
 
@@ -374,16 +374,20 @@ function computeAndShow(){
   const aSum = sumRange(0, 18), bSum = sumRange(18, 36), cSum = sumRange(36, 50);
   const aPct = Math.round(aSum / 72 * 100), bPct = Math.round(bSum / 72 * 100), cPct = Math.round(cSum / 56 * 100);
   const symA = symptomCount(0), symB = symptomCount(18);
-  let possibility = Math.round(0.42 * aPct + 0.33 * bPct + 0.25 * cPct);
+  // 可能性％：単純な直線ではなく、広がりを持たせた算出（中間の回答でも差が出るように）
+  const raw = 0.42 * aPct + 0.33 * bPct + 0.25 * cPct;
+  let possibility = Math.round(5 + raw * 1.02);
   if (symA.count >= 5 || symB.count >= 5) possibility += 5;
   if (symA.count >= 5 && symB.count >= 5) possibility += 3;
-  possibility = Math.max(3, Math.min(97, possibility));
+  if (cPct >= 60) possibility += 4;               // 生活への影響が大きい場合の上乗せ
+  if ((answers[36] ?? 0) >= 3) possibility += 3;  // 過集中が強い場合の上乗せ
+  possibility = Math.max(5, Math.min(97, possibility));
 
   // 判定文
   let verdict, vsub;
-  if (possibility >= 65){ verdict = "ADHDの傾向が強いタイプです"; vsub = "2領域のうち少なくとも一方で、診断基準の症状数（成人では5つ以上）に届く回答パターンでした。"; }
-  else if (possibility >= 45){ verdict = "ADHDの傾向が見られます"; vsub = "いくつかの症状が日常的に出ている回答パターンでした。困りごとの程度によっては、専門家への相談も選択肢です。"; }
-  else if (possibility >= 28){ verdict = "軽いADHD傾向が見られます"; vsub = "一部の項目に傾向が出ています。特性というより、場面や体調で出やすいタイプかもしれません。"; }
+  if (possibility >= 70){ verdict = "ADHDの傾向が強いタイプです"; vsub = "2領域のうち少なくとも一方で、診断基準の症状数（成人では5つ以上）に届く回答パターンでした。"; }
+  else if (possibility >= 50){ verdict = "ADHDの傾向が見られます"; vsub = "いくつかの症状が日常的に出ている回答パターンでした。困りごとの程度によっては、専門家への相談も選択肢です。"; }
+  else if (possibility >= 32){ verdict = "軽いADHD傾向が見られます"; vsub = "一部の項目に傾向が出ています。特性というより、場面や体調で出やすいタイプかもしれません。"; }
   else { verdict = "ADHDの傾向は弱いタイプです"; vsub = "今回の回答では、ADHDらしいパターンはほとんど見られませんでした。"; }
 
   // タイプ判定
@@ -398,13 +402,24 @@ function computeAndShow(){
   else typeKey = "steady";
   const type = TYPES[typeKey];
 
-  // ADHDっぽいポイント（症状スコア上位）
-  const allSym = [...symA.detail.map(d => ({...d, area:"A"})), ...symB.detail.map(d => ({...d, area:"B"}))]
-    .filter(d => d.score >= 3).sort((x, y) => y.score - x.score).slice(0, 5);
-  const points = allSym.length ? allSym.map(d => {
+  // ADHDっぽいポイント（症状スコア上位。低スコアでも相対的に高い項目を拾う）
+  const sortedSym = [...symA.detail.map(d => ({...d, area:"A"})), ...symB.detail.map(d => ({...d, area:"B"}))]
+    .sort((x, y) => y.score - x.score);
+  let picks = sortedSym.filter(d => d.score >= 3).slice(0, 5);
+  let relative = false;
+  if (!picks.length){ picks = sortedSym.filter(d => d.score > 0).slice(0, 3); relative = picks.length > 0; }
+  const renderSym = (d) => {
     const [label, desc] = SYMPTOM_LABELS[d.key];
     return `<li><b>${label}</b>（${d.area === "A" ? "不注意" : "多動・衝動"}） ― ${desc}</li>`;
-  }).join("") : "<li>突出して高い項目はありませんでした。全体としてバランスの取れた回答パターンです。</li>";
+  };
+  let points;
+  if (picks.length && relative){
+    points = "<li>突出して高い項目はありませんでした。強いて言えば、相対的にこのあたりが「っぽい」ポイントです。</li>" + picks.map(renderSym).join("");
+  } else if (picks.length){
+    points = picks.map(renderSym).join("");
+  } else {
+    points = "<li>全項目がほぼゼロでした。ここまで徹底すると、それはそれで一種の才能かもしれません。</li>";
+  }
 
   // 強み（タイプ共通の枠組み＋回答ベース）
   const strengths = [];
