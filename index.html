@@ -228,7 +228,12 @@ const ADHD_Q = [
   ["C","c14","こうした傾向のせいで、日常生活で困ることがある"],
   ["X","x1","朝のほうが、頭が冴える"],["X","x2","作業中は音楽や環境音があったほうが進む"],
   ["X","x3","予定はカレンダーアプリより、紙のメモのほうが安心だ"],["X","x4","新しい道具やアプリを試すのが好きだ"],
-  ["X","x5","一人の時間がないと、なかなか回復しない"]
+  ["X","x5","一人の時間がないと、なかなか回復しない"],
+  ["Y","y1","細かいチェック作業は、むしろ得意なほうだ"],["Y","y2","やることリストは、だいたい計画通りに片付く"],
+  ["Y","y3","物の置き場所は決まっていて、探すことはほぼない"],["Y","y4","じっと座って過ごす時間は、むしろ心地いい"],
+  ["Y","y5","行列や順番待ちは、あまり苦にならない"],["Y","y6","話す前に考えるクセがある"],
+  ["Y","y7","休みの日は、予定を詰めるより成り行きがいい"],["Y","y8","部屋は、整っているより生活感があるほうが落ち着く"],
+  ["Y","y9","新しい店では、定番より冒険したメニューを選ぶ"],["Y","y10","買い物は、比較検討より第一印象で決めることが多い"]
 ];
 const ADHD_SYMPTOMS = {
   a1:["ケアレスミス","細部への注意がそれやすく、確認漏れやうっかりミスが出やすいタイプです。"],
@@ -268,7 +273,7 @@ function adhdSymptom(answers, offset){
   let count = 0; const detail = [];
   for (let s = 0; s < 9; s++){
     const v1 = answers[offset + s*2] ?? 0, v2 = answers[offset + s*2 + 1] ?? 0;
-    const present = Math.max(v1, v2) >= 3 || (v1 >= 2 && v2 >= 2);
+    const present = Math.max(v1, v2) >= 3;
     if (present) count++;
     detail.push({ key: ADHD_Q[offset + s*2][1], score: v1 + v2 });
   }
@@ -277,8 +282,11 @@ function adhdSymptom(answers, offset){
 function levelText(pct){ if (pct >= 65) return "かなり強く出ています"; if (pct >= 45) return "はっきり出ています"; if (pct >= 28) return "やや出ています"; return "ほとんど出ていません"; }
 function renderADHD(ans){
   const sum = (f, t) => ans.slice(f, t).reduce((a, b) => a + (b ?? 0), 0);
-  const aSum = sum(0, 18), bSum = sum(18, 36), cSum = sum(36, 50);
-  const aPct = Math.round(aSum / 72 * 100), bPct = Math.round(bSum / 72 * 100), cPct = Math.round(cSum / 56 * 100);
+  let aSum = sum(0, 18), bSum = sum(18, 36);
+  const cSum = sum(36, 50);
+  [55, 56, 57].forEach(i => { aSum += 4 - (ans[i] ?? 0); });
+  [58, 59, 60].forEach(i => { bSum += 4 - (ans[i] ?? 0); });
+  const aPct = Math.round(aSum / 84 * 100), bPct = Math.round(bSum / 84 * 100), cPct = Math.round(cSum / 56 * 100);
   const symA = adhdSymptom(ans, 0), symB = adhdSymptom(ans, 18);
   let bonus = 0;
   if (symA.count >= 5 || symB.count >= 5) bonus += 5;
@@ -334,9 +342,16 @@ function renderADHD(ans){
     "<b>紙メモ派</b> ― デジタルより紙の手触りで記憶が定着するタイプ。",
     "<b>新しいもの好き</b> ― 新しい道具ややり方に惹かれるタイプ。刺激が集中の燃料です。",
     "<b>ソロ回復</b> ― 一人の時間で電池を戻すタイプ。予定の詰め込みすぎが集中を削ります。"];
-  const foils = ans.slice(50, 55);
-  const fMax = Math.max(...foils.map(v => v ?? 0));
-  const foilHtml = fMax > 0 ? FOIL_TXT[foils.indexOf(fMax)] : "おまけ項目はどれも低めでした。作業スタイルに強い偏りはないようです。";
+  const DECOY_TXT = [
+    "<b>成り行き派</b> ― 予定を詰めない休みに心地よさを感じるタイプです。",
+    "<b>生活感派</b> ― 整いすぎた空間より、生活感のあるほうが落ち着くタイプです。",
+    "<b>冒険オーダー</b> ― 新しい店では冒険したメニューを選ぶタイプ。刺激への親和性が高めです。",
+    "<b>第一印象決断</b> ― 比較より直感で決めるタイプ。決断の速さが持ち味です。"];
+  const candIdx = [50, 51, 52, 53, 54, 61, 62, 63, 64];
+  const candTxt = [...FOIL_TXT, ...DECOY_TXT];
+  let fMax = 0, fPos = -1;
+  candIdx.forEach((ai, k) => { const v = ans[ai] ?? 0; if (v > fMax){ fMax = v; fPos = k; } });
+  const foilHtml = fPos >= 0 ? candTxt[fPos] : "おまけ項目はどれも低めでした。作業スタイルに強い偏りはないようです。";
   const body2 = body + `
     <h3 class="sec">自覚とのギャップ</h3>
     <ul class="tight"><li>${gapHtml}</li></ul>
@@ -364,7 +379,11 @@ const ASD_Q = [
   ["I","同じ作品や体験を、何度でも楽しめる"],["I","興味を持ったテーマは、とことん深くまで調べる"],
   ["I","物事には「正しい順番や形」があると感じる"],
   ["X","好きな曲を、何度も繰り返し聴く"],["X","買い物は、決まった店・決まった物のほうが安心だ"],
-  ["X","話すより、文字で伝えるほうが楽だ"],["X","匂いの変化によく気づく"]
+  ["X","話すより、文字で伝えるほうが楽だ"],["X","匂いの変化によく気づく"],
+  ["Y","初対面の人とも、雑談はわりと平気だ"],["Y","予定が急に変わっても、すぐ切り替えられる"],
+  ["Y","細かいことは、あまり気にならないほうだ"],["Y","遠回しな言い方でも、意図はだいたい伝わる"],
+  ["Y","服は、機能よりデザインで選ぶことが多い"],["Y","旅行は、計画を立てる過程がいちばん楽しい"],
+  ["Y","音楽は、歌詞よりメロディで好きになる"],["Y","季節の変わり目を感じるのが好きだ"]
 ];
 const ASD_DOMAINS = {
   S:["社交","大人数の場や雑談でエネルギーを消耗しやすく、一人で回復するタイプです。"],
@@ -390,8 +409,11 @@ const ASD_TYPES = {
 function renderASD(ans){
   const keys = ["S","W","D","C","I"];
   const sums = {}; keys.forEach((k, di) => { sums[k] = ans.slice(di * 5, di * 5 + 5).reduce((a, b) => a + (b ?? 0), 0); });
-  const pcts = {}; keys.forEach(k => { pcts[k] = Math.round(sums[k] / 20 * 100); });
-  const totalPct = Math.round(ans.slice(0, 25).reduce((a, b) => a + (b ?? 0), 0) / 100 * 100);
+  const revMap = { S: 29, W: 30, D: 31, C: 32 };
+  keys.forEach(k => { if (revMap[k] != null) sums[k] += 4 - (ans[revMap[k]] ?? 0); });
+  const pcts = {}; keys.forEach(k => { pcts[k] = Math.round(sums[k] / (k === "I" ? 20 : 24) * 100); });
+  const totalRaw = ans.slice(0, 25).reduce((a, b) => a + (b ?? 0), 0) + [29, 30, 31, 32].reduce((a, i) => a + (4 - (ans[i] ?? 0)), 0);
+  const totalPct = Math.round(totalRaw / 116 * 100);
   const topKey = keys.slice().sort((a, b) => pcts[b] - pcts[a])[0];
   const possibility = blurPct(totalPct, pcts[topKey] >= 75 ? 3 : 0);
   let verdict, vsub;
@@ -419,9 +441,16 @@ function renderASD(ans){
     "<b>いつもの安心感</b> ― 決まった店・決まった物に安心を覚えるタイプです。",
     "<b>文字派</b> ― 話すより文字で伝えるほうが楽なタイプです。",
     "<b>感覚アンテナ</b> ― 匂いの変化によく気づく、感覚の感度が高いタイプです。"];
-  const foilsA = ans.slice(25, 29);
-  const fMaxA = Math.max(...foilsA.map(v => v ?? 0));
-  const foilHtmlA = fMaxA > 0 ? FOIL_A[foilsA.indexOf(fMaxA)] : "おまけ項目はどれも低めでした。感覚面の偏りは小さめのようです。";
+  const DECOY_A = [
+    "<b>デザイン決断</b> ― 機能より見た目で選ぶ感性派です。",
+    "<b>計画プロセス派</b> ― 本番より、計画を立てる過程に喜びを感じるタイプです。",
+    "<b>メロディ派</b> ― 歌詞より音そのもので音楽を楽しむタイプです。",
+    "<b>季節センサー</b> ― 季節の移り変わりに敏感なタイプです。"];
+  const candIdxA = [25, 26, 27, 28, 33, 34, 35, 36];
+  const candTxtA = [...FOIL_A, ...DECOY_A];
+  let fMaxA = 0, fPosA = -1;
+  candIdxA.forEach((ai, k) => { const v = ans[ai] ?? 0; if (v > fMaxA){ fMaxA = v; fPosA = k; } });
+  const foilHtmlA = fPosA >= 0 ? candTxtA[fPosA] : "おまけ項目はどれも低めでした。感覚面の偏りは小さめのようです。";
   const bodyA = body + `
     <h3 class="sec">偏りのプロファイル</h3>
     <ul class="tight"><li>${biasHtml}</li></ul>
@@ -435,7 +464,7 @@ function renderASD(ans){
 const MODULES = [
   { id:"adhd", chipText:"いつもの自分について", tag:"ADHD CHECK", cls:"", name:"ADHDタイプ診断",
     hubDesc:"不注意と多動・衝動の傾向から、可能性％とタイプを判定します。",
-    minutes:5, introDesc:"過去6か月の自分を思い浮かべて、質問に直感で答えてください。本編50問＋おまけ5問です。",
+    minutes:5, introDesc:"過去6か月の自分を思い浮かべて、直感で答えてください。全65問。関係なさそうな質問も混ざっています。",
     points:["<b>可能性％</b>　ADHD傾向の強さを0〜100％で表示","<b>タイプ判定</b>　不注意と多動・衝動のバランスからタイプを表示","<b>傾向レポート</b>　「どこがADHDっぽいのか」を項目ごとに解説"],
     note:"※ セルフチェックであり、医学的な診断ではありません。「可能性％」は回答パターンから算出した目安です。",
     parts:{A:"第1部 ― 不注意について",B:"第2部 ― 多動性・衝動性について",C:"第3部 ― 生活への影響について",X:"おまけ ― ライフスタイルについて"},
@@ -443,7 +472,7 @@ const MODULES = [
     questions:ADHD_Q.map(([p, s, t]) => ({p, t})), render:renderADHD },
   { id:"asd", chipText:"ふだんの感覚について", tag:"ASD CHECK", cls:"teal", name:"ASD傾向チェック",
     hubDesc:"社交・切り替え・細部への注目など、5領域からASD傾向とタイプを判定します。",
-    minutes:4, introDesc:"普段の自分の感覚に一番近いものを選んでください。本編25問＋おまけ4問です。",
+    minutes:4, introDesc:"普段の自分の感覚に一番近いものを選んでください。全37問。関係なさそうな質問も混ざっています。",
     points:["<b>可能性％</b>　ASD傾向の強さを0〜100％で表示","<b>5領域のプロフィール</b>　社交／切り替え／細部／コミュニケーション／こだわり","<b>タイプ判定</b>　一番強い領域からタイプを表示"],
     note:"※ セルフチェックであり、医学的な診断ではありません。ASD（自閉スペクトラム症）の傾向を見るための目安です。",
     parts:{S:"領域 ― 社交について",W:"領域 ― 切り替えについて",D:"領域 ― 細部への注目について",C:"領域 ― コミュニケーションについて",I:"領域 ― こだわり・想像力について",X:"おまけ ― ふだんの感覚について"},
@@ -483,13 +512,13 @@ function buildOrder(m){
   if (m.id === "adhd"){
     const o = [];
     for (let i = 0; i < 18; i++){ o.push(i); o.push(18 + i); }
-    for (let i = 36; i < n; i++) o.push(i);
+    for (let i = 36; i < 50; i++) o.push(i); [55,50,56,51,57,52,58,53,59,54,60,61,62,63,64].forEach(i => o.push(i));
     return o;
   }
   if (m.id === "asd"){
     const o = [];
     for (let i = 0; i < 5; i++) for (let g = 0; g < 5; g++) o.push(g * 5 + i);
-    for (let i = 25; i < n; i++) o.push(i);
+    [29,33,30,34,31,35,32,36,25,26,27,28].forEach(i => o.push(i));
     return o;
   }
   return Array.from({length: n}, (_, i) => i);
