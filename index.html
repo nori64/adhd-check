@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADHDタイプ診断｜50の質問でわかる可能性％とタイプ</title>
-<meta name="description" content="50の質問に答えるだけで、ADHD傾向の可能性％、不注意／多動・衝動のバランス、あなたのタイプがわかります。回答はブラウザの外に送信されません。">
+<title>マインドタイプ診断｜ADHD・ASD・心の声・心のイメージ</title>
+<meta name="description" content="ADHDタイプ診断、ASD傾向チェック、心の声チェック、心のイメージ診断。心理的な違いをセルフチェックできるサイト。回答はブラウザの外に送信されません。">
 <style>
   :root{
     --ink:#232733; --sub:#6b7280; --bg:#f6f5f1; --card:#ffffff;
-    --accent:#5b5bd6; --accent2:#0ea5a4; --warn:#e0653a;
+    --accent:#5b5bd6; --accent2:#0ea5a4; --warn:#e0653a; --pink:#d6578a;
     --border:#e6e2d8; --chip:#eef0ff;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
@@ -22,17 +22,27 @@
   .card{background:var(--card); border:1px solid var(--border); border-radius:18px;
         padding:26px 22px; margin-top:20px; box-shadow:0 2px 10px rgba(35,39,51,.04);}
   .hidden{display:none !important;}
+  /* hub */
+  .mod-grid{display:grid; gap:14px; margin-top:20px;}
+  .mod{display:block; width:100%; text-align:left; cursor:pointer; background:var(--card);
+       border:1.5px solid var(--border); border-radius:18px; padding:20px; box-shadow:0 2px 10px rgba(35,39,51,.04);}
+  .mod:active{transform:scale(.995);}
+  .mod .m-tag{font-size:11.5px; letter-spacing:.14em; font-weight:800; color:var(--accent);}
+  .mod.teal .m-tag{color:var(--accent2);} .mod.orange .m-tag{color:var(--warn);} .mod.pink .m-tag{color:var(--pink);}
+  .mod h2{font-size:21px; margin:4px 0 4px;}
+  .mod p{margin:0; font-size:14px; color:var(--sub);}
+  .mod .m-meta{margin-top:10px; font-size:12.5px; color:var(--sub); display:flex; gap:14px;}
+  .mod .m-meta b{color:var(--ink);}
+  .note{font-size:12.5px; color:var(--sub); background:#fbfaf7; border:1px dashed var(--border);
+        border-radius:12px; padding:12px 14px; margin-top:18px;}
+  button.cta{display:block; width:100%; border:none; cursor:pointer; background:var(--accent); color:#fff;
+             font-size:18px; font-weight:700; padding:16px; border-radius:14px; margin-top:22px;}
+  button.ghost{display:block; width:100%; border:1px solid var(--border); background:#fff; color:var(--ink);
+               cursor:pointer; font-size:15px; padding:13px; border-radius:12px; margin-top:10px;}
   /* intro */
   .intro-points{display:grid; gap:10px; margin:18px 0;}
   .intro-points div{background:#faf9ff; border:1px solid var(--border); border-radius:12px; padding:12px 14px; font-size:15px;}
   .intro-points b{color:var(--accent);}
-  .note{font-size:12.5px; color:var(--sub); background:#fbfaf7; border:1px dashed var(--border);
-        border-radius:12px; padding:12px 14px; margin-top:16px;}
-  button.cta{display:block; width:100%; border:none; cursor:pointer; background:var(--accent); color:#fff;
-             font-size:18px; font-weight:700; padding:16px; border-radius:14px; margin-top:22px;}
-  button.cta:active{transform:scale(.99);}
-  button.ghost{display:block; width:100%; border:1px solid var(--border); background:#fff; color:var(--ink);
-               cursor:pointer; font-size:15px; padding:13px; border-radius:12px; margin-top:10px;}
   /* quiz */
   .progress-row{display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--sub); margin-top:22px;}
   .progress{height:10px; background:#e9e6dd; border-radius:99px; overflow:hidden; margin-top:8px;}
@@ -67,9 +77,10 @@
   .bar-row .b-head{display:flex; justify-content:space-between; font-size:14.5px; font-weight:700;}
   .bar-row .b-head span:last-child{color:var(--accent);}
   .bar{height:14px; background:#eceae2; border-radius:99px; overflow:hidden; margin-top:5px;}
-  .bar > div{height:100%; border-radius:99px; background:var(--accent); width:0%; transition:width .8s ease;}
+  .bar > div{height:100%; border-radius:99px; background:var(--accent);}
   .bar.teal > div{background:var(--accent2);}
   .bar.orange > div{background:var(--warn);}
+  .bar.pink > div{background:var(--pink);}
   .bar-desc{font-size:13px; color:var(--sub); margin-top:4px;}
   ul.tight{margin:6px 0 0; padding-left:20px;}
   ul.tight li{margin:7px 0; font-size:15px;}
@@ -85,7 +96,7 @@
     .no-print{display:none !important;}
     .card{box-shadow:none; border:none; padding:0;}
     #result-screen{display:block !important;}
-    #intro-screen,#quiz-screen{display:none !important;}
+    #hub-screen,#intro-screen,#quiz-screen{display:none !important;}
     .wrap{max-width:100%; padding:0;}
   }
 </style>
@@ -93,32 +104,39 @@
 <body>
 <div class="wrap">
   <header class="site">
-    <div class="logo">FOCUS TYPE CHECK</div>
-    <h1>ADHDタイプ診断</h1>
-    <p>50の質問でわかる、可能性％とあなたのタイプ</p>
+    <div class="logo">MIND TYPE LAB</div>
+    <h1>マインドタイプ診断</h1>
+    <p>人によって違う「心のクセ」をチェックする場所</p>
   </header>
 
+  <!-- ===== Hub ===== -->
+  <section id="hub-screen">
+    <div class="mod-grid" id="mod-grid"></div>
+    <div class="note">※ どの診断もセルフチェックです。医学的な診断ではありません。結果は傾向の目安としてお楽しみください。回答データはブラウザの外に送信されません。</div>
+  </section>
+
   <!-- ===== Intro ===== -->
-  <section id="intro-screen" class="card">
-    <p style="margin-top:0;">過去6か月の自分を思い浮かべて、50の質問に直感で答えてください。結果では次の3つが分かります。</p>
-    <div class="intro-points">
-      <div><b>可能性％</b>　ADHD傾向の強さを0〜100％で表示</div>
-      <div><b>タイプ判定</b>　不注意と多動・衝動のバランスから、MBTIみたいにタイプを表示</div>
-      <div><b>傾向レポート</b>　「どこがADHDっぽいのか」を項目ごとに具体的に解説</div>
+  <section id="intro-screen" class="hidden">
+    <div class="card">
+      <span class="chip" id="i-tag"></span>
+      <h2 id="i-title" style="margin:12px 0 6px; font-size:24px;"></h2>
+      <p id="i-desc" style="margin:0;"></p>
+      <div class="intro-points" id="i-points"></div>
+      <p style="font-size:14px; color:var(--sub);" id="i-meta"></p>
+      <button class="cta" id="start-btn">診断をはじめる</button>
+      <button class="ghost" id="intro-back">← 診断一覧にもどる</button>
+      <div class="note" id="i-note"></div>
     </div>
-    <p style="font-size:14px; color:var(--sub);">所要時間は約5分。結果はその場で表示され、PDFで保存もできます。回答データはブラウザの外に送信されません。</p>
-    <button class="cta" id="start-btn">診断をはじめる</button>
-    <div class="note">※ この診断はセルフチェックです。医学的な診断ではありません。「可能性％」は回答パターンから算出した目安であり、ADHDの有無を確定するものではありません。気になる場合は専門医にご相談ください。</div>
   </section>
 
   <!-- ===== Quiz ===== -->
   <section id="quiz-screen" class="hidden">
-    <div class="progress-row"><span id="q-count">質問 1 / 50</span><span id="q-pct">0%</span></div>
+    <div class="progress-row"><span id="q-count"></span><span id="q-pct"></span></div>
     <div class="progress"><div id="q-bar"></div></div>
     <div class="card" style="margin-top:16px;">
-      <span class="chip" id="q-chip">第1部</span>
+      <span class="chip" id="q-chip"></span>
       <div class="q-text" id="q-text"></div>
-      <div class="q-sub">過去6か月で、どのくらい当てはまりますか？</div>
+      <div class="q-sub" id="q-sub"></div>
       <div class="opts" id="q-opts"></div>
       <div class="nav-row">
         <button id="back-btn">← もどる</button>
@@ -129,104 +147,71 @@
 
   <!-- ===== Result ===== -->
   <section id="result-screen" class="hidden">
-    <div class="card">
-      <div class="verdict">
-        <div class="label">ADHD傾向の可能性</div>
-        <div class="big-percent"><span id="r-percent">0</span><span>％</span></div>
-        <div class="verdict-word" id="r-verdict"></div>
-        <div style="font-size:14px; color:var(--sub);" id="r-verdict-sub"></div>
-      </div>
-
-      <div class="type-box">
-        <div class="t-label">YOUR TYPE</div>
-        <div class="t-name" id="r-type-name"></div>
-        <div class="t-en" id="r-type-en"></div>
-        <p id="r-type-desc"></p>
-      </div>
-
-      <h3 class="sec">領域別スコア</h3>
-      <div class="bar-row">
-        <div class="b-head"><span>不注意</span><span id="r-a-num"></span></div>
-        <div class="bar"><div id="r-a-bar"></div></div>
-        <div class="bar-desc" id="r-a-desc"></div>
-      </div>
-      <div class="bar-row">
-        <div class="b-head"><span>多動性・衝動性</span><span id="r-b-num"></span></div>
-        <div class="bar teal"><div id="r-b-bar"></div></div>
-        <div class="bar-desc" id="r-b-desc"></div>
-      </div>
-      <div class="bar-row">
-        <div class="b-head"><span>生活への影響</span><span id="r-c-num"></span></div>
-        <div class="bar orange"><div id="r-c-bar"></div></div>
-        <div class="bar-desc" id="r-c-desc"></div>
-      </div>
-
-      <h3 class="sec">あなたの「ADHDっぽい」ポイント</h3>
-      <ul class="tight" id="r-points"></ul>
-
-      <h3 class="sec">強みとして出やすい面</h3>
-      <ul class="tight" id="r-strengths"></ul>
-
-      <h3 class="sec">タイプ別の付き合い方ヒント</h3>
-      <div class="two-col" id="r-tips"></div>
-
-      <div class="no-print">
-        <button class="cta" id="pdf-btn">結果をPDFで保存する</button>
-        <button class="ghost" id="retry-btn">もう一度診断する</button>
-        <p style="font-size:12px; color:var(--sub); text-align:center;">PDF保存：ボタンで印刷画面が開きます。送信先を「PDFとして保存」にしてください（iPhoneは共有ボタン→プリント→共有でPDF化できます）。</p>
-      </div>
-
-      <div class="disclaimer">
-        この結果はセルフチェックによる傾向の目安です。医学的な診断ではありませんし、ADHDの有無を確定するものでもありません。判定は「不注意」「多動性・衝動性」の2領域の症状項目（各9症状×2問）と、生活への影響の回答から算出しています。日常生活に支障が続く場合や、正確な評価が必要な場合は、精神科・心療内科などの専門医にご相談ください。
-      </div>
-    </div>
+    <div class="card" id="result-body"></div>
   </section>
 
-  <footer class="site">Focus Type Check ― 回答はあなたのブラウザ内でのみ処理されます</footer>
+  <footer class="site">Mind Type Lab ― 回答はあなたのブラウザ内でのみ処理されます</footer>
 </div>
 <script>
 "use strict";
-/* ===== 質問データ: [領域(A/B/C), 症状キー, 文面] ===== */
-const QUESTIONS = [
-  // --- A 不注意（9症状 × 2問）---
-  ["A","a1","細かい部分を見落として、うっかりミスをすることがある"],
-  ["A","a1","確認したはずの書類やメールで、誤字や抜けに気づかないことがある"],
-  ["A","a2","同じ作業を続けていると、集中が途切れてしまう"],
-  ["A","a2","長い会議や説明を、最後まで聞き続けるのが苦手だ"],
-  ["A","a3","話しかけられても、上の空で聞き逃すことがある"],
-  ["A","a3","名前を呼ばれても、すぐには気づかないことがある"],
-  ["A","a4","やるべきことを始めても、最後まで終わらないことがある"],
-  ["A","a4","手順どおりに進める途中で、別のことに脱線してしまう"],
-  ["A","a5","作業の段取りや段取り替えを考えるのが苦手だ"],
-  ["A","a5","優先順位をつけるのに時間がかかる、または後回しになる"],
-  ["A","a6","集中力の要る作業（書類・手続きなど）を後回しにしがちだ"],
-  ["A","a6","退屈な作業は、締め切り直前まで手がつかない"],
-  ["A","a7","鍵・スマホ・財布などの置き場所を忘れることがある"],
-  ["A","a7","作業に必要なものを探す時間がよくある"],
-  ["A","a8","作業中に、周りの音や動きが気になって手が止まる"],
-  ["A","a8","関係のない考えが浮かんで、作業に戻れないことがある"],
-  ["A","a9","約束や予定を忘れてしまうことがある"],
-  ["A","a9","家事や手続きなど、日々の用事を忘れることがある"],
-  // --- B 多動性・衝動性（9症状 × 2問）---
-  ["B","b1","座っていても、手足をそわそわ動かしたり貧乏ゆすりをしたりする"],
-  ["B","b1","ペンを回す・髪を触るなど、無意識に体を動かしていることがある"],
-  ["B","b2","座っているべき場面で、席を立ちたくなる・立ってしまう"],
-  ["B","b2","長時間座る場面（映画・会議など）が苦痛に感じる"],
-  ["B","b3","内側から急かされるような、落ち着かない感覚がある"],
-  ["B","b3","何もしていない時間に、ソワソワしてしまう"],
-  ["B","b4","静かに過ごす趣味（読書・映画など）に没頭しづらい"],
-  ["B","b4","リラックスして何もしないことが苦手だ"],
-  ["B","b5","「エンジンで動かされている」ように、常に何かしていないと落ち着かない"],
-  ["B","b5","周りから「いつも忙しそうだ」と言われる"],
-  ["B","b6","気づくと、自分ばかり話していることがある"],
-  ["B","b6","話し出すと止まらなくなることがある"],
-  ["B","b7","質問が終わる前に、答えてしまうことがある"],
-  ["B","b7","相手の話の先が読めて、結論を先に言ってしまう"],
-  ["B","b8","行列や順番待ちにイライラする"],
-  ["B","b8","返信や結果を待つのが苦手で、つい催促してしまう"],
-  ["B","b9","他人の会話や作業に、つい口を挟んでしまう"],
-  ["B","b9","思いついたら、相手の話の途中でも発言してしまう"],
-  // --- C 生活への影響・経過（14問）---
+const $ = (id) => document.getElementById(id);
+const FREQ = [["ない",0],["あまりない",1],["半々",2],["すこしある",3],["ある",4]];
+const FREQ_SUB = "普段の自分に、どのくらい当てはまりますか？";
+
+function barRow(label, pct, numText, colorClass, desc){
+  return `<div class="bar-row"><div class="b-head"><span>${label}</span><span>${numText}</span></div>` +
+    `<div class="bar ${colorClass}"><div style="width:${pct}%"></div></div>` +
+    (desc ? `<div class="bar-desc">${desc}</div>` : "") + `</div>`;
+}
+function blurPct(rawPct, bonus){
+  let p = Math.round(5 + rawPct * 1.02) + (bonus || 0);
+  return Math.max(5, Math.min(97, p));
+}
+function resultShell(o){
+  return `
+  <div class="verdict">
+    <div class="label">${o.label}</div>
+    <div class="big-percent">${o.percent}<span>％</span></div>
+    <div class="verdict-word">${o.verdict}</div>
+    <div style="font-size:14px; color:var(--sub);">${o.verdictSub}</div>
+  </div>
+  <div class="type-box">
+    <div class="t-label">YOUR TYPE</div>
+    <div class="t-name">${o.typeName}</div>
+    <div class="t-en">${o.typeEn}</div>
+    <p>${o.typeDesc}</p>
+  </div>
+  ${o.bodyHtml}
+  <div class="no-print">
+    <button class="cta" onclick="window.print()">結果をPDFで保存する</button>
+    <button class="ghost" onclick="retryModule()">もう一度診断する</button>
+    <button class="ghost" onclick="goHub()">← 診断一覧にもどる</button>
+    <p style="font-size:12px; color:var(--sub); text-align:center;">PDF保存：ボタンで印刷画面が開きます。送信先を「PDFとして保存」にしてください（iPhoneは共有ボタン→プリント→共有でPDF化できます）。</p>
+  </div>
+  <div class="disclaimer">${o.disclaimer}</div>`;
+}
+const DISCLAIMER_COMMON = "この結果はセルフチェックによる傾向の目安です。医学的な診断ではありませんし、障害の有無を確定するものでもありません。日常生活に支障が続く場合や、正確な評価が必要な場合は、専門医にご相談ください。";
+
+/* ================= ADHDモジュール ================= */
+const ADHD_Q = [
+  ["A","a1","細かい部分を見落として、うっかりミスをすることがある"],["A","a1","確認したはずの書類やメールで、誤字や抜けに気づかないことがある"],
+  ["A","a2","同じ作業を続けていると、集中が途切れてしまう"],["A","a2","長い会議や説明を、最後まで聞き続けるのが苦手だ"],
+  ["A","a3","話しかけられても、上の空で聞き逃すことがある"],["A","a3","名前を呼ばれても、すぐには気づかないことがある"],
+  ["A","a4","やるべきことを始めても、最後まで終わらないことがある"],["A","a4","手順どおりに進める途中で、別のことに脱線してしまう"],
+  ["A","a5","作業の段取りや段取り替えを考えるのが苦手だ"],["A","a5","優先順位をつけるのに時間がかかる、または後回しになる"],
+  ["A","a6","集中力の要る作業（書類・手続きなど）を後回しにしがちだ"],["A","a6","退屈な作業は、締め切り直前まで手がつかない"],
+  ["A","a7","鍵・スマホ・財布などの置き場所を忘れることがある"],["A","a7","作業に必要なものを探す時間がよくある"],
+  ["A","a8","作業中に、周りの音や動きが気になって手が止まる"],["A","a8","関係のない考えが浮かんで、作業に戻れないことがある"],
+  ["A","a9","約束や予定を忘れてしまうことがある"],["A","a9","家事や手続きなど、日々の用事を忘れることがある"],
+  ["B","b1","座っていても、手足をそわそわ動かしたり貧乏ゆすりをしたりする"],["B","b1","ペンを回す・髪を触るなど、無意識に体を動かしていることがある"],
+  ["B","b2","座っているべき場面で、席を立ちたくなる・立ってしまう"],["B","b2","長時間座る場面（映画・会議など）が苦痛に感じる"],
+  ["B","b3","内側から急かされるような、落ち着かない感覚がある"],["B","b3","何もしていない時間に、ソワソワしてしまう"],
+  ["B","b4","静かに過ごす趣味（読書・映画など）に没頭しづらい"],["B","b4","リラックスして何もしないことが苦手だ"],
+  ["B","b5","「エンジンで動かされている」ように、常に何かしていないと落ち着かない"],["B","b5","周りから「いつも忙しそうだ」と言われる"],
+  ["B","b6","気づくと、自分ばかり話していることがある"],["B","b6","話し出すと止まらなくなることがある"],
+  ["B","b7","質問が終わる前に、答えてしまうことがある"],["B","b7","相手の話の先が読めて、結論を先に言ってしまう"],
+  ["B","b8","行列や順番待ちにイライラする"],["B","b8","返信や結果を待つのが苦手で、つい催促してしまう"],
+  ["B","b9","他人の会話や作業に、つい口を挟んでしまう"],["B","b9","思いついたら、相手の話の途中でも発言してしまう"],
   ["C","c1","興味のあることに集中しすぎて、他の予定や用事をすっぽかすことがある"],
   ["C","c2","作業の最後の仕上げ（確認・提出・片づけ）が残りやすい"],
   ["C","c3","家事や手続きを、途中で止めてしまうことがある"],
@@ -242,7 +227,7 @@ const QUESTIONS = [
   ["C","c13","睡眠不足や体調によって、集中力の波が大きく変わる"],
   ["C","c14","これらの傾向のせいで、日常生活に支障を感じることがある"]
 ];
-const SYMPTOM_LABELS = {
+const ADHD_SYMPTOMS = {
   a1:["ケアレスミス","細部への注意がそれやすく、確認漏れやうっかりミスが出やすいタイプです。"],
   a2:["集中の持続","同じ作業を長く続けると集中が切れやすいタイプです。進み具合が見えない作業ほど顕著です。"],
   a3:["聞き逃し","話しかけられても意識が別のところにあり、聞き逃しが出やすいタイプです。"],
@@ -262,209 +247,326 @@ const SYMPTOM_LABELS = {
   b8:["待つことの苦手さ","順番待ちや返信待ちにストレスを感じやすいタイプです。"],
   b9:["割り込み","思いつきをその場で口に出しやすく、会話に割り込みがちになるタイプです。"]
 };
-const OPTIONS = [
-  ["ない", 0], ["あまりない", 1], ["半々", 2], ["すこしある", 3], ["ある", 4]
-];
-const PART_NAMES = { A: "第1部 ― 不注意について", B: "第2部 ― 多動性・衝動性について", C: "第3部 ― 生活への影響について" };
-
-/* ===== タイプ定義 ===== */
-const TYPES = {
-  chaos: { name: "カオス・クリエイター型", en: "THE CHAOS CREATOR",
-    desc: "不注意と多動・衝動の両方が強く出る混合タイプ。頭の回転と行動量は人一倍で、興味のあることには爆発的な集中力を見せます。その分、日常の細部管理や「最後まで閉じる」作業でエネルギーを消耗しやすいのが特徴です。",
-    tips: [["締切を味方にする", "締切直前の集中力が武器。大きな締切の前に、自分で小さな締切を刻んで置くと安定します。"],
-           ["完了条件を先に書く", "始める前に「何ができたら終わりか」を一行で決めると、最後の1割が残りにくくなります。"],
-           ["体を動かす休憩", "そわそわは敵ではなく燃料。短い運動を挟むと、その後の集中が戻りやすくなります。"],
-           ["置き場所の固定", "鍵・スマホ・財布の定位置を1か所に決めるだけで、探し物の時間は大きく減ります。"]] },
-  dreamer: { name: "没頭ドリーマー型", en: "THE DEEP DIVER",
-    desc: "不注意が優位なタイプ。興味のある世界に入ると時間を忘れて没頭できる一方、退屈な作業や日常の細部から意識が離れやすいのが特徴です。外からは「ぼんやり」に見えても、頭の中ではよく考えが巡っています。",
-    tips: [["作業を小さく区切る", "退屈な作業は25分などの短い単位に分け、区切りごとに見える印をつけると続きやすくなります。"],
-           ["聞いたら即メモ", "名前・日付・予定は覚える対象ではなく記録する対象に。1か所のメモに集約するのがコツです。"],
-           ["終わりの合図を置く", "没頭しすぎを防ぐには、始める前に「止める時刻」や「ここまでやったら止める」を決めておくこと。"],
-           ["確認を仕組みにする", "提出前のチェックリストを固定化すると、ケアレスミスは努力ではなく仕組みで減らせます。"]] },
-  accel: { name: "即行アクセル型", en: "THE ACCELERATOR",
-    desc: "多動性・衝動性が優位なタイプ。思いついたら即行動でき、スピードと推進力が強みです。一方で、待つことや慎重な確認、発言のコントロールで損をしやすいのが特徴です。",
-    tips: [["送信前に一呼吸", "メールや発言は、送る前に一度だけ画面を離れる／読み返すルールが効きます。"],
-           ["待ち時間を設計する", "順番待ちが苦手なら、待つ場面には別の小さな作業や音楽を用意しておくと消耗が減ります。"],
-           ["メモで発言を保持", "会議で思いついたことは、口に出す前に一語だけメモ。順番が来たらメモから話せます。"],
-           ["エネルギーの出口", "定期的な運動や活動量の確保が、そのまま落ち着きの土台になります。"]] },
-  switcher: { name: "気分スイッチ型", en: "THE SWITCHER",
-    desc: "不注意と多動・衝動のどちらも中程度で、場面や調子によって出方が大きく変わるタイプ。集中できる日とできない日の差が激しく、「やればできるのに」と言われがちですが、実際には環境と設計の問題であることが多いです。",
-    tips: [["調子の波を記録する", "集中できた日／できなかった日の条件を軽くメモすると、自分の取扱説明書が見えてきます。"],
-           ["環境を先に整える", "静けさよりも「進み具合が見える化」が効くタイプ。進捗を目で見える形に置きましょう。"],
-           ["悪い日の代替案", "重い手順が回らない日用に、最小単位の代替タスクを用意しておくと自己嫌悪が減ります。"],
-           ["睡眠を最優先に", "集中の波は睡眠で大きく変わります。まず睡眠の質を疑うのが近道です。"]] },
-  sensitive: { name: "環境センシティブ型", en: "THE TUNER",
-    desc: "症状のスコア自体は高くないのに、生活への影響は感じやすいタイプ。特性そのものより、環境との噛み合わせで困りごとが生まれている可能性があります。職場や生活の設計を変えると、大きく楽になることがあります。",
-    tips: [["困りごとの場面を特定", "「いつ・どこで・何をしているとき」に困るかを絞ると、対策は一気に具体的になります。"],
-           ["仕組みを1つだけ変える", "全部を直そうとせず、摩擦の大きい1場面だけ仕組みを変えて効果を見るのが確実です。"],
-           ["相談の選択肢", "支障が続く場合は、特性以外の要因（睡眠・ストレス等）も含め、専門家に相談する価値があります。"],
-           ["強みの環境に寄せる", "集中できる条件が分かっているなら、その条件に寄せた環境選び自体が最大の対策です。"]] },
-  steady: { name: "マイペース職人型", en: "THE STEADY CRAFTSMAN",
-    desc: "不注意・多動性・衝動性のいずれも低く、注意や行動のコントロールは安定しているタイプ。今回のチェックではADHDらしい傾向はほとんど見られません。集中の波があるとすれば、特性より体調や環境の影響が大きいでしょう。",
-    tips: [["今のやり方を維持", "予定管理や持ち物管理など、今うまくいっている方法はそのまま続けるのが一番です。"],
-           ["体調管理が集中管理", "集中の低下を感じたら、まず睡眠・疲労・ストレスを疑いましょう。"],
-           ["気になる変化だけ観察", "一時的な乱れは誰にでもあります。長く続く変化だけを観察すれば十分です。"],
-           ["周りへの理解に", "この結果は、特性に困る人の感じ方を想像する手がかりにもなります。"]] }
+const ADHD_TYPES = {
+  chaos:{name:"カオス・クリエイター型",en:"THE CHAOS CREATOR",desc:"不注意と多動・衝動の両方が強く出る混合タイプ。頭の回転と行動量は人一倍で、興味のあることには爆発的な集中力を見せます。その分、日常の細部管理や「最後まで閉じる」作業でエネルギーを消耗しやすいのが特徴です。",
+    tips:[["締切を味方にする","大きな締切の前に、自分で小さな締切を刻んで置くと安定します。"],["完了条件を先に書く","始める前に「何ができたら終わりか」を一行で決めると、最後の1割が残りにくくなります。"],["体を動かす休憩","短い運動を挟むと、その後の集中が戻りやすくなります。"],["置き場所の固定","鍵・スマホ・財布の定位置を1か所に決めるだけで、探し物は大きく減ります。"]]},
+  dreamer:{name:"没頭ドリーマー型",en:"THE DEEP DIVER",desc:"不注意が優位なタイプ。興味のある世界に入ると時間を忘れて没頭できる一方、退屈な作業や日常の細部から意識が離れやすいのが特徴です。外からは「ぼんやり」に見えても、頭の中ではよく考えが巡っています。",
+    tips:[["作業を小さく区切る","退屈な作業は25分などの短い単位に分け、区切りごとに見える印をつけると続きやすくなります。"],["聞いたら即メモ","名前・日付・予定は覚える対象ではなく記録する対象に。"],["終わりの合図を置く","始める前に「止める時刻」を決めておくと、没頭しすぎを防げます。"],["確認を仕組みにする","提出前のチェックリストを固定化すると、ミスは仕組みで減らせます。"]]},
+  accel:{name:"即行アクセル型",en:"THE ACCELERATOR",desc:"多動性・衝動性が優位なタイプ。思いついたら即行動でき、スピードと推進力が強みです。一方で、待つことや慎重な確認、発言のコントロールで損をしやすいのが特徴です。",
+    tips:[["送信前に一呼吸","メールや発言は、送る前に一度だけ読み返すルールが効きます。"],["待ち時間を設計する","待つ場面には別の小さな作業や音楽を用意しておくと消耗が減ります。"],["メモで発言を保持","会議で思いついたことは一語だけメモ。順番が来たらメモから話せます。"],["エネルギーの出口","定期的な運動や活動量の確保が、そのまま落ち着きの土台になります。"]]},
+  switcher:{name:"気分スイッチ型",en:"THE SWITCHER",desc:"不注意と多動・衝動のどちらも中程度で、場面や調子によって出方が大きく変わるタイプ。集中できる日とできない日の差が激しく、「やればできるのに」と言われがちですが、実際には環境と設計の問題であることが多いです。",
+    tips:[["調子の波を記録する","集中できた日／できなかった日の条件を軽くメモすると、自分の取扱説明書が見えてきます。"],["環境を先に整える","静けさよりも「進み具合が見える化」が効くタイプです。"],["悪い日の代替案","重い手順が回らない日用に、最小単位の代替タスクを用意しておきましょう。"],["睡眠を最優先に","集中の波は睡眠で大きく変わります。"]]},
+  sensitive:{name:"環境センシティブ型",en:"THE TUNER",desc:"症状のスコア自体は高くないのに、生活への影響は感じやすいタイプ。特性そのものより、環境との噛み合わせで困りごとが生まれている可能性があります。生活の設計を変えると、大きく楽になることがあります。",
+    tips:[["困りごとの場面を特定","「いつ・どこで・何をしているとき」に困るかを絞ると、対策は具体的になります。"],["仕組みを1つだけ変える","摩擦の大きい1場面だけ仕組みを変えて効果を見るのが確実です。"],["相談の選択肢","支障が続く場合は、特性以外の要因も含め専門家に相談する価値があります。"],["強みの環境に寄せる","集中できる条件に寄せた環境選び自体が最大の対策です。"]]},
+  steady:{name:"マイペース職人型",en:"THE STEADY CRAFTSMAN",desc:"不注意・多動性・衝動性のいずれも低く、注意や行動のコントロールは安定しているタイプ。今回のチェックではADHDらしい傾向はほとんど見られません。集中の波があるとすれば、特性より体調や環境の影響が大きいでしょう。",
+    tips:[["今のやり方を維持","今うまくいっている方法はそのまま続けるのが一番です。"],["体調管理が集中管理","集中の低下を感じたら、まず睡眠・疲労・ストレスを疑いましょう。"],["気になる変化だけ観察","長く続く変化だけを観察すれば十分です。"],["周りへの理解に","この結果は、特性に困る人の感じ方を想像する手がかりにもなります。"]]}
 };
+function adhdSymptom(answers, offset){
+  let count = 0; const detail = [];
+  for (let s = 0; s < 9; s++){
+    const v1 = answers[offset + s*2] ?? 0, v2 = answers[offset + s*2 + 1] ?? 0;
+    const present = Math.max(v1, v2) >= 3 || (v1 >= 2 && v2 >= 2);
+    if (present) count++;
+    detail.push({ key: ADHD_Q[offset + s*2][1], score: v1 + v2 });
+  }
+  return { count, detail };
+}
+function levelText(pct){ if (pct >= 65) return "かなり強く出ています"; if (pct >= 45) return "はっきり出ています"; if (pct >= 28) return "やや出ています"; return "ほとんど出ていません"; }
+function renderADHD(ans){
+  const sum = (f, t) => ans.slice(f, t).reduce((a, b) => a + (b ?? 0), 0);
+  const aSum = sum(0, 18), bSum = sum(18, 36), cSum = sum(36, 50);
+  const aPct = Math.round(aSum / 72 * 100), bPct = Math.round(bSum / 72 * 100), cPct = Math.round(cSum / 56 * 100);
+  const symA = adhdSymptom(ans, 0), symB = adhdSymptom(ans, 18);
+  let bonus = 0;
+  if (symA.count >= 5 || symB.count >= 5) bonus += 5;
+  if (symA.count >= 5 && symB.count >= 5) bonus += 3;
+  if (cPct >= 60) bonus += 4;
+  if ((ans[36] ?? 0) >= 3) bonus += 3;
+  const possibility = blurPct(0.42 * aPct + 0.33 * bPct + 0.25 * cPct, bonus);
+  let verdict, vsub;
+  if (possibility >= 70){ verdict = "ADHDの傾向が強いタイプです"; vsub = "少なくとも一方の領域で、診断基準の症状数（成人では5つ以上）に届く回答パターンでした。"; }
+  else if (possibility >= 50){ verdict = "ADHDの傾向が見られます"; vsub = "いくつかの症状が日常的に出ている回答パターンでした。困りごとの程度によっては、専門家への相談も選択肢です。"; }
+  else if (possibility >= 32){ verdict = "軽いADHD傾向が見られます"; vsub = "一部の項目に傾向が出ています。特性というより、場面や体調で出やすいタイプかもしれません。"; }
+  else { verdict = "ADHDの傾向は弱いタイプです"; vsub = "今回の回答では、ADHDらしいパターンはほとんど見られませんでした。"; }
+  const aHigh = symA.count >= 5 || aPct >= 60, bHigh = symB.count >= 5 || bPct >= 60;
+  const aMid = aPct >= 35, bMid = bPct >= 35;
+  let tk;
+  if (aHigh && bHigh) tk = "chaos"; else if (aHigh) tk = "dreamer"; else if (bHigh) tk = "accel";
+  else if (aMid || bMid) tk = "switcher"; else if (cPct >= 40) tk = "sensitive"; else tk = "steady";
+  const type = ADHD_TYPES[tk];
+  const sorted = [...symA.detail.map(d => ({...d, area:"不注意"})), ...symB.detail.map(d => ({...d, area:"多動・衝動"}))].sort((x, y) => y.score - x.score);
+  let picks = sorted.filter(d => d.score >= 3).slice(0, 5); let relative = false;
+  if (!picks.length){ picks = sorted.filter(d => d.score > 0).slice(0, 3); relative = picks.length > 0; }
+  const renderSym = (d) => { const [label, desc] = ADHD_SYMPTOMS[d.key]; return `<li><b>${label}</b>（${d.area}） ― ${desc}</li>`; };
+  let points;
+  if (picks.length && relative) points = "<li>突出して高い項目はありませんでした。強いて言えば、相対的にこのあたりが「っぽい」ポイントです。</li>" + picks.map(renderSym).join("");
+  else if (picks.length) points = picks.map(renderSym).join("");
+  else points = "<li>全項目がほぼゼロでした。ここまで徹底すると、それはそれで一種の才能かもしれません。</li>";
+  const strengths = [];
+  if ((ans[36] ?? 0) >= 2) strengths.push("興味のあることへの<b>過集中</b> ― 没頭したときの生産性と深さは大きな武器です。");
+  if ((ans[47] ?? 0) >= 2) strengths.push("<b>集中力の瞬発力</b> ― ハマったときの吸収と推進は、場面によって強く発揮されます。");
+  if (bPct >= 40) strengths.push("<b>行動量とエネルギー</b> ― 思いついてから動くまでの速さは強みになります。");
+  if (aPct < 40) strengths.push("<b>注意の安定性</b> ― 日常の細部管理が比較的安定しているのは土台としての強みです。");
+  strengths.push("<b>パターンの自覚</b> ― 自分の出方を知っていること自体が、環境設計と対策の出発点になります。");
+  const body = `
+    <h3 class="sec">領域別スコア</h3>
+    ${barRow("不注意", aPct, `${aSum}点（${aPct}%）／ 症状 ${symA.count}/9`, "", `不注意の出方は「${levelText(aPct)}」。成人の診断基準では、この領域の症状が5つ以上・6か月以上続くことが一つの目安です（あなたは${symA.count}つ）。`)}
+    ${barRow("多動性・衝動性", bPct, `${bSum}点（${bPct}%）／ 症状 ${symB.count}/9`, "teal", `多動性・衝動性の出方は「${levelText(bPct)}」。同じく症状数の目安は5つ以上です（あなたは${symB.count}つ）。`)}
+    ${barRow("生活への影響", cPct, `${cSum}点（${cPct}%）`, "orange", cPct >= 50 ? "傾向が生活の困りごとに結びついている度合いが高めです。" : cPct >= 28 ? "傾向が困りごとに結びつく場面が、ある程度ありそうです。" : "傾向があっても、生活への支障としては小さめのようです。")}
+    <h3 class="sec">あなたの「ADHDっぽい」ポイント</h3>
+    <ul class="tight">${points}</ul>
+    <h3 class="sec">強みとして出やすい面</h3>
+    <ul class="tight">${strengths.slice(0, 4).map(s => `<li>${s}</li>`).join("")}</ul>
+    <h3 class="sec">タイプ別の付き合い方ヒント</h3>
+    <div class="two-col">${type.tips.map(([h, p]) => `<div class="mini-card"><h4>${h}</h4><p>${p}</p></div>`).join("")}</div>`;
+  return { label: "ADHD傾向の可能性", percent: possibility, verdict, verdictSub: vsub,
+           typeName: type.name, typeEn: type.en, typeDesc: type.desc, bodyHtml: body, disclaimer: DISCLAIMER_COMMON };
+}
 
-/* ===== 状態と進行 ===== */
-let idx = 0;
-const answers = new Array(QUESTIONS.length).fill(null);
-const $ = (id) => document.getElementById(id);
+/* ================= ASDモジュール ================= */
+const ASD_Q = [
+  ["S","雑談や世間話が苦手だ"],["S","大人数の集まりより、一人の時間のほうが落ち着く"],
+  ["S","相手の表情や場の空気を読むのが難しいと感じる"],["S","グループの会話に入るタイミングがつかみにくい"],
+  ["S","人付き合いより、自分の趣味の時間を優先しがちだ"],
+  ["W","急な予定変更にストレスを感じる"],["W","一度決めたやり方を変えるのが苦手だ"],
+  ["W","同時に複数の作業を進めるのが苦手だ"],["W","いつもの流れ（ルーティン）が崩れると調子が出ない"],
+  ["W","物事の途中変更より、最初に決めた通りに進めたい"],
+  ["D","数字・日付・模様などの規則性によく気づく"],["D","細かい違いや誤りにすぐ気づく"],
+  ["D","全体の印象より、部分のほうが先に目に入る"],["D","物の並びや位置の変化が気になる"],
+  ["D","音・光・匂い・肌ざわりなど、感覚の刺激に敏感だ"],
+  ["C","比喩や冗談を、文字通りの意味で受け取りがちだ"],["C","言外の意味や皮肉に気づきにくい"],
+  ["C","自分の興味のある話題になると、一方的に話しがちだ"],["C","曖昧な指示だと、どう動けばいいか分かりにくい"],
+  ["C","会話の暗黙のルールが分からず、困ることがある"],
+  ["I","物語やごっこ遊びより、仕組みや事実に惹かれる"],["I","コレクションやデータ集めが好きだ"],
+  ["I","同じもの・同じ体験を繰り返し楽しめる"],["I","興味の対象が、狭く深くなりがちだ"],
+  ["I","物事の「正しい手順」や「決まった形」にこだわりがある"]
+];
+const ASD_DOMAINS = {
+  S:["社交","大人数の場や雑談でエネルギーを消耗しやすく、一人で回復するタイプです。"],
+  W:["切り替え","予定変更やマルチタスクに負担がかかり、決まった流れの中で力を発揮するタイプです。"],
+  D:["細部と感覚","パターンや細かい違いによく気づき、音・光などの感覚刺激にも敏感なタイプです。"],
+  C:["コミュニケーション","言外の意味より言葉そのもので理解するタイプ。曖昧な表現で困りやすい一方、率直さは信頼につながります。"],
+  I:["こだわり・興味","興味の対象が狭く深くなりがちで、集める・極めることに喜びを感じるタイプです。"]
+};
+const ASD_TYPES = {
+  balance:{name:"バランス型",en:"THE BALANCED",desc:"5つの領域のどこにも強い偏りは見られませんでした。今回のチェックでは、ASDらしい傾向はほとんど出ていない回答パターンです。",
+    tips:[["今の感覚を大切に","場面による得意・不得意は誰にでもあります。今の対処が機能しているなら、それが答えです。"],["体調と環境を見る","対人や集中の乱れは、特性より睡眠やストレスで説明できることも多いです。"]]},
+  D:{name:"ディテール探偵型",en:"THE PATTERN DETECTIVE",desc:"細部への注目と感覚の鋭さが際立つタイプ。パターンや規則性を見抜く力は強みですが、感覚刺激の多い環境では消耗しやすいのが特徴です。",
+    tips:[["感覚の調整アイテム","耳栓・サングラス・決まった休憩場所など、刺激を調整する道具が効きます。"],["全体像はメモで補う","細部に入る前に、目的と完成形を一行メモにすると迷子になりにくいです。"]]},
+  W:{name:"ルーティン職人型",en:"THE ROUTINE CRAFTSMAN",desc:"決まった流れの中で安定して力を発揮するタイプ。予定変更や同時並行に負担がかかりやすい一方、手順が定まった作業では高い精度と継続力を発揮します。",
+    tips:[["変更は予告制に","予定変更は早めに知る／知らせる仕組みが安心につながります。"],["一つずつ終わらせる","並行作業より直列処理。終わったものを見える形で消していくと安定します。"]]},
+  C:{name:"ストレート言語型",en:"THE STRAIGHT TALKER",desc:"言葉をそのままの意味で受け取るタイプ。行間を読む場面で困りやすい一方、率直で一貫したコミュニケーションは信頼されやすい特徴です。",
+    tips:[["確認の一言を習慣に","「つまり〜ということですか」と言い換えて確かめる習慣が、すれ違いを減らします。"],["曖昧な指示は具体化を頼む","遠慮なく「期限と形」を聞くのが、結果的に全員のためになります。"]]},
+  S:{name:"ソロ集中型",en:"THE SOLO FOCUSER",desc:"社交の場で消耗しやすく、一人の時間で回復するタイプ。集団のノリには合わせにくくても、集中して深く取り組む力を持っています。",
+    tips:[["回復時間を先に確保","人と会う予定のあとに、一人で回復する時間を予定として入れておきましょう。"],["少人数・テキストを活用","大人数の場より、少人数や文章でのやり取りのほうが力が出やすいタイプです。"]]},
+  I:{name:"コレクター型",en:"THE COLLECTOR",desc:"興味の対象を狭く深く掘り下げるタイプ。好きな分野では専門家級の知識と継続力を発揮します。興味の外の事柄とのバランスが課題になりやすいのが特徴です。",
+    tips:[["興味を仕事と接続する","深く掘る力は、そのまま専門性という資産になります。"],["興味の外は仕組みで回す","苦手な日常業務は、決まった手順とリマインダーで自動化寄りにしましょう。"]]}
+};
+function renderASD(ans){
+  const keys = ["S","W","D","C","I"];
+  const sums = {}; keys.forEach((k, di) => { sums[k] = ans.slice(di * 5, di * 5 + 5).reduce((a, b) => a + (b ?? 0), 0); });
+  const pcts = {}; keys.forEach(k => { pcts[k] = Math.round(sums[k] / 20 * 100); });
+  const totalPct = Math.round(ans.reduce((a, b) => a + (b ?? 0), 0) / 100 * 100);
+  const topKey = keys.slice().sort((a, b) => pcts[b] - pcts[a])[0];
+  const possibility = blurPct(totalPct, pcts[topKey] >= 75 ? 3 : 0);
+  let verdict, vsub;
+  if (possibility >= 70){ verdict = "ASDの傾向が強いタイプです"; vsub = "複数の領域で傾向がはっきり出ている回答パターンでした。"; }
+  else if (possibility >= 50){ verdict = "ASDの傾向が見られます"; vsub = "いくつかの領域に傾向が出ています。困りごとの程度によっては、専門家への相談も選択肢です。"; }
+  else if (possibility >= 32){ verdict = "軽いASD傾向が見られます"; vsub = "一部の領域に傾向が出ています。特性の出方は場面によっても変わります。"; }
+  else { verdict = "ASDの傾向は弱いタイプです"; vsub = "今回の回答では、ASDらしいパターンはほとんど見られませんでした。"; }
+  const type = totalPct < 28 ? ASD_TYPES.balance : ASD_TYPES[topKey];
+  const top2 = keys.slice().sort((a, b) => pcts[b] - pcts[a]).slice(0, 2);
+  const colors = { S:"", W:"teal", D:"orange", C:"pink", I:"" };
+  const body = `
+    <h3 class="sec">領域別スコア</h3>
+    ${keys.map(k => barRow(ASD_DOMAINS[k][0], pcts[k], `${sums[k]}点（${pcts[k]}%）`, colors[k], "")).join("")}
+    <h3 class="sec">あなたの傾向</h3>
+    <ul class="tight">${top2.map(k => `<li><b>${ASD_DOMAINS[k][0]}</b> ― ${ASD_DOMAINS[k][1]}</li>`).join("")}</ul>
+    <h3 class="sec">タイプ別の付き合い方ヒント</h3>
+    <div class="two-col">${type.tips.map(([h, p]) => `<div class="mini-card"><h4>${h}</h4><p>${p}</p></div>`).join("")}</div>`;
+  return { label: "ASD傾向の可能性", percent: possibility, verdict, verdictSub: vsub,
+           typeName: type.name, typeEn: type.en, typeDesc: type.desc, bodyHtml: body, disclaimer: DISCLAIMER_COMMON };
+}
 
-function show(screen){
-  ["intro-screen","quiz-screen","result-screen"].forEach(s => $(s).classList.add("hidden"));
-  $(screen).classList.remove("hidden");
-  window.scrollTo({top:0});
+/* ================= 心の声モジュール ================= */
+const VOICE_Q = [
+  "本を読むとき、頭の中で「声」が聞こえる","考えごとをするとき、言葉で考えている",
+  "知っている人の声を、耳で聞くように頭の中で再現できる","会話の前に、頭の中でセリフをリハーサルする",
+  "歌のメロディや歌詞が、頭の中で再生される","自分を励ます／叱る声が、内側から聞こえる感じがある",
+  "文章を書く前に、頭の中で音として浮かんでいる","相手の言いそうなことを、声としてシミュレーションできる",
+  "数字や用事を、声に出さずに音で覚えられる","夢の中で、会話の声が聞こえる",
+  "集中しているとき、内側の声がうるさく感じることがある","頭の中が「静かだ」と感じることのほうが多い"
+];
+function renderVoice(ans){
+  const total = ans.reduce((a, b) => a + (b ?? 0), 0);
+  const pct = Math.max(2, Math.min(98, Math.round(total / 48 * 100)));
+  const sub = (idxs, max) => Math.round(idxs.reduce((a, i) => a + (ans[i] ?? 0), 0) / max * 100);
+  let type, verdict;
+  if (pct >= 70){ type = {name:"ラジオDJ型",en:"THE INNER RADIO",desc:"頭の中の声がとてもよく聞こえるタイプ。思考のほとんどが言葉と声で進み、会話のリハーサルや文章の推敲も「音」で行います。にぎやかな分、集中したいときに声が邪魔をすることもあります。"}; verdict = "心の声がよく聞こえるタイプです"; }
+  else if (pct >= 45){ type = {name:"ナレーター型",en:"THE NARRATOR",desc:"頭の中に安定したナレーションがあるタイプ。読書や思考は声を伴って進み、言葉で考えることが自然なスタイルです。"}; verdict = "心の声が聞こえるタイプです"; }
+  else if (pct >= 25){ type = {name:"囁き型",en:"THE WHISPER",desc:"心の声は小さく、場面によって聞こえたり聞こえなかったりするタイプ。言葉よりイメージや感覚で考える場面も多い、混合型の思考スタイルです。"}; verdict = "心の声は小さめのタイプです"; }
+  else { type = {name:"サイレント型",en:"THE SILENT MIND",desc:"頭の中で声がほとんど聞こえないタイプ。思考は言葉の音ではなく、イメージ・概念・感覚そのもので進みます。研究では、内的な声がほとんどない状態は「アナウラリア（anauralia）」と呼ばれ、一定数の人に見られると報告されています。声がないことは欠陥ではなく、思考の形式の違いです。"}; verdict = "心の声がほぼ聞こえないタイプです"; }
+  const body = `
+    <h3 class="sec">場面別の聞こえ度</h3>
+    ${barRow("言語での思考", sub([0,1,6], 12), sub([0,1,6], 12) + "%", "", "")}
+    ${barRow("声・音楽の再生", sub([2,4,8], 12), sub([2,4,8], 12) + "%", "teal", "")}
+    ${barRow("会話のシミュレーション", sub([3,7], 8), sub([3,7], 8) + "%", "orange", "")}
+    ${barRow("内なる対話", sub([5,9,10], 12), sub([5,9,10], 12) + "%", "pink", "")}
+    <h3 class="sec">この違いについて</h3>
+    <ul class="tight">
+      <li>「考えるとき頭の中で声が聞こえるかどうか」は、人によって大きく違うことが研究で分かってきています。声がよく聞こえる人もいれば、まったく聞こえない人もいます。</li>
+      <li>どちらが優れているという話ではなく、思考の「形式」の違いです。声派は言語化とリハーサルが得意で、無声派はイメージや概念で一気に処理するのが得意な傾向があります。</li>
+      <li>相手に「頭の中で考えて」と言っても、相手の頭の中の形式は自分と違うかもしれません。それを知ると、すれ違いの見え方が変わります。</li>
+    </ul>`;
+  return { label: "心の声の聞こえ度", percent: pct, verdict, verdictSub: "12問の回答から算出した、内的な声の鮮明さの目安です。",
+           typeName: type.name, typeEn: type.en, typeDesc: type.desc, bodyHtml: body,
+           disclaimer: "この結果はセルフチェックによる傾向の目安です。心の声の有無は病気や障害ではなく、認知の個人差として研究されているテーマです。" };
+}
+
+/* ================= 心のイメージモジュール ================= */
+const IMAGE_Q = [
+  "赤いリンゴ","家族や親しい人の顔","よく行く場所の風景","朝日が昇る空の色",
+  "好きな食べ物の見た目と質感","自分の部屋の間取りと家具の配置","動物が走っている動き","雨の日の窓の様子",
+  "数字の「7」の形","海の波の動き","子どもの頃の教室","まだ行ったことのない場所の想像"
+];
+function renderImage(ans){
+  const total = ans.reduce((a, b) => a + (b ?? 0), 0);
+  const pct = Math.max(2, Math.min(98, Math.round(total / 48 * 100)));
+  const sub = (idxs, max) => Math.round(idxs.reduce((a, i) => a + (ans[i] ?? 0), 0) / max * 100);
+  let type, verdict;
+  if (pct >= 75){ type = {name:"ハイパーフォト型",en:"THE PHOTOGRAPHIC",desc:"心の中のイメージが写真のように鮮明なタイプ。思い出すことと「見直す」ことの差が小さく、視覚的な記憶や再現が大きな武器になります。鮮明すぎて、嫌な場面も同じ解像度で再生されやすいのが玉にきずです。"}; verdict = "イメージが写真のように鮮明なタイプです"; }
+  else if (pct >= 50){ type = {name:"クリア型",en:"THE CLEAR VIEWER",desc:"心のイメージがかなり鮮明なタイプ。人の顔や場所を思い浮かべて考えることが自然にでき、視覚化を使った記憶や計画が得意なスタイルです。"}; verdict = "イメージが鮮明なタイプです"; }
+  else if (pct >= 25){ type = {name:"ミスト型",en:"THE MISTY",desc:"イメージは浮かぶものの、霧がかかったようにぼんやりしているタイプ。輪郭は分かるが細部は曖昧、という人が多く、言葉や概念で補いながら考えるスタイルです。"}; verdict = "イメージはぼんやりめのタイプです"; }
+  else { type = {name:"ブラインド型",en:"THE BLIND MIND",desc:"心の目でイメージをほとんど描けないタイプ。研究では「アファンタジア（aphantasia）」と呼ばれ、人口の数%に見られると報告されています。顔や風景を「思い浮かべる」のではなく「知っている」で処理するスタイルで、言語や概念の思考が発達しやすいと言われます。欠陥ではなく、認知の形式の違いです。"}; verdict = "イメージがほぼ浮かばないタイプです"; }
+  const body = `
+    <h3 class="sec">対象別の鮮明度</h3>
+    ${barRow("人と顔", sub([1], 4), sub([1], 4) + "%", "", "")}
+    ${barRow("場所と風景", sub([2,5,10], 12), sub([2,5,10], 12) + "%", "teal", "")}
+    ${barRow("物と質感", sub([0,4,8], 12), sub([0,4,8], 12) + "%", "orange", "")}
+    ${barRow("動きと自然", sub([3,6,7,9,11], 20), sub([3,6,7,9,11], 20) + "%", "pink", "")}
+    <h3 class="sec">この違いについて</h3>
+    <ul class="tight">
+      <li>「リンゴを思い浮かべて」と言われたとき、頭の中に見える鮮明さは人によって全く違います。写真のように見える人から、何も見えない人までいます。</li>
+      <li>イメージが浮かばない人も、物の形や位置は「知識として」把握しています。見え方の違いは、記憶力や知能の優劣とは別物です。</li>
+      <li>「昨日の夕食を思い出して」と言われて映像が再生されるかどうかは、この個人差が大きく関係します。</li>
+    </ul>`;
+  return { label: "心のイメージ鮮明度", percent: pct, verdict, verdictSub: "12問の回答から算出した、心の目の鮮明さの目安です。",
+           typeName: type.name, typeEn: type.en, typeDesc: type.desc, bodyHtml: body,
+           disclaimer: "この結果はセルフチェックによる傾向の目安です。イメージの鮮明さは病気や障害ではなく、認知の個人差として研究されているテーマです。" };
+}
+
+/* ================= モジュール登録 ================= */
+const MODULES = [
+  { id:"adhd", tag:"ADHD CHECK", cls:"", name:"ADHDタイプ診断",
+    hubDesc:"不注意と多動・衝動の傾向から、可能性％とタイプを判定します。",
+    minutes:5, introDesc:"過去6か月の自分を思い浮かべて、50の質問に直感で答えてください。",
+    points:["<b>可能性％</b>　ADHD傾向の強さを0〜100％で表示","<b>タイプ判定</b>　不注意と多動・衝動のバランスからタイプを表示","<b>傾向レポート</b>　「どこがADHDっぽいのか」を項目ごとに解説"],
+    note:"※ セルフチェックであり、医学的な診断ではありません。「可能性％」は回答パターンから算出した目安です。",
+    parts:{A:"第1部 ― 不注意について",B:"第2部 ― 多動性・衝動性について",C:"第3部 ― 生活への影響について"},
+    options:FREQ, qsub:"過去6か月で、どのくらい当てはまりますか？",
+    questions:ADHD_Q.map(([p, s, t]) => ({p, t})), render:renderADHD },
+  { id:"asd", tag:"ASD CHECK", cls:"teal", name:"ASD傾向チェック",
+    hubDesc:"社交・切り替え・細部への注目など、5領域からASD傾向とタイプを判定します。",
+    minutes:4, introDesc:"普段の自分の感覚に一番近いものを選んでください。25問です。",
+    points:["<b>可能性％</b>　ASD傾向の強さを0〜100％で表示","<b>5領域のプロフィール</b>　社交／切り替え／細部／コミュニケーション／こだわり","<b>タイプ判定</b>　一番強い領域からタイプを表示"],
+    note:"※ セルフチェックであり、医学的な診断ではありません。ASD（自閉スペクトラム症）の傾向を見るための目安です。",
+    parts:{S:"領域 ― 社交について",W:"領域 ― 切り替えについて",D:"領域 ― 細部への注目について",C:"領域 ― コミュニケーションについて",I:"領域 ― こだわり・想像力について"},
+    options:FREQ, qsub:FREQ_SUB,
+    questions:ASD_Q.map(([p, t]) => ({p, t})), render:renderASD },
+  { id:"voice", tag:"INNER VOICE", cls:"orange", name:"心の声チェック",
+    hubDesc:"頭の中で「声」が聞こえる人と聞こえない人がいます。あなたの思考の形式はどっち？",
+    minutes:2, introDesc:"ふだんの感覚に一番近いものを選んでください。12問です。",
+    points:["<b>聞こえ度％</b>　内的な声の鮮明さを数値化","<b>タイプ判定</b>　ラジオDJ型／ナレーター型／囁き型／サイレント型","<b>場面別スコア</b>　言語思考・声の再生・会話シミュレーションなど"],
+    note:"※ これは障害のチェックではなく、認知の個人差（アナウラリア等）を知るためのものです。",
+    parts:{V:"心の声について"},
+    options:[["まったくない",0],["まれにある",1],["時々ある",2],["よくある",3],["いつもある",4]],
+    qsub:"ふだんの感覚に一番近いものを選んでください。",
+    questions:VOICE_Q.map((t, i) => ({p:"V", t, rev: i === 11})), render:renderVoice },
+  { id:"image", tag:"MINDS EYE", cls:"pink", name:"心のイメージ診断",
+    hubDesc:"リンゴを思い浮かべると、写真のように見える人と何も見えない人がいます。心の目の鮮明度を測定。",
+    minutes:2, introDesc:"各項目を実際に思い浮かべてみて、その鮮明さを選んでください。12問です。",
+    points:["<b>鮮明度％</b>　心のイメージの鮮明さを数値化","<b>タイプ判定</b>　ハイパーフォト型／クリア型／ミスト型／ブラインド型","<b>対象別スコア</b>　人と顔／場所／物／動きで違いが見えます"],
+    note:"※ これは障害のチェックではなく、認知の個人差（アファンタジア等）を知るためのものです。",
+    parts:{M:"心のイメージについて"},
+    options:[["まったく浮かばない",0],["ぼんやり",1],["まあまあ浮かぶ",2],["かなり鮮明",3],["写真のように鮮明",4]],
+    qsub:"目を閉じて思い浮かべて、その鮮明さを選んでください。",
+    qPrefix:"思い浮かべてください：「", qSuffix:"」",
+    questions:IMAGE_Q.map(t => ({p:"M", t})), render:renderImage }
+];
+
+/* ================= エンジン ================= */
+let cur = null, idx = 0, answers = [];
+function showScreen(id){
+  ["hub-screen","intro-screen","quiz-screen","result-screen"].forEach(s => $(s).classList.add("hidden"));
+  $(id).classList.remove("hidden");
+  window.scrollTo({top: 0});
+}
+function renderHub(){
+  $("mod-grid").innerHTML = MODULES.map((m, i) => `
+    <button class="mod ${m.cls}" onclick="openIntro(${i})">
+      <div class="m-tag">${m.tag}</div>
+      <h2>${m.name}</h2>
+      <p>${m.hubDesc}</p>
+      <div class="m-meta"><span><b>${m.questions.length}問</b></span><span>約${m.minutes}分</span><span>結果はPDF保存可</span></div>
+    </button>`).join("");
+}
+function openIntro(i){
+  cur = MODULES[i];
+  $("i-tag").textContent = cur.tag;
+  $("i-title").textContent = cur.name;
+  $("i-desc").textContent = cur.introDesc;
+  $("i-points").innerHTML = cur.points.map(p => `<div>${p}</div>`).join("");
+  $("i-meta").textContent = `全${cur.questions.length}問 ／ 所要時間は約${cur.minutes}分です。回答データはブラウザの外に送信されません。`;
+  $("i-note").textContent = cur.note;
+  showScreen("intro-screen");
+}
+function startModule(){
+  answers = new Array(cur.questions.length).fill(null);
+  idx = 0;
+  showScreen("quiz-screen");
+  renderQuestion();
 }
 function renderQuestion(){
-  const [area] = QUESTIONS[idx];
-  $("q-count").textContent = `質問 ${idx+1} / ${QUESTIONS.length}`;
-  const pct = Math.round(idx / QUESTIONS.length * 100);
+  const q = cur.questions[idx];
+  $("q-count").textContent = `質問 ${idx + 1} / ${cur.questions.length}`;
+  const pct = Math.round(idx / cur.questions.length * 100);
   $("q-pct").textContent = pct + "%";
   $("q-bar").style.width = pct + "%";
-  $("q-chip").textContent = PART_NAMES[area];
-  $("q-text").textContent = QUESTIONS[idx][2];
+  $("q-chip").textContent = cur.parts[q.p] || "";
+  $("q-text").textContent = (cur.qPrefix || "") + q.t + (cur.qSuffix || "");
+  $("q-sub").textContent = cur.qsub;
   const box = $("q-opts");
   box.innerHTML = "";
-  OPTIONS.forEach(([label, val]) => {
+  cur.options.forEach(([label, val]) => {
+    const eff = q.rev ? (4 - val) : val;
     const b = document.createElement("button");
-    b.className = "opt" + (answers[idx] === val ? " sel" : "");
+    b.className = "opt" + (answers[idx] === eff ? " sel" : "");
     b.innerHTML = `<span>${label}</span><small>${val}</small>`;
     b.onclick = () => {
-      answers[idx] = val;
+      answers[idx] = eff;
       renderQuestion();
-      setTimeout(() => { if (idx < QUESTIONS.length - 1){ idx++; renderQuestion(); } else { finish(); } }, 180);
+      setTimeout(() => { if (idx < cur.questions.length - 1){ idx++; renderQuestion(); } else { finishQuiz(); } }, 180);
     };
     box.appendChild(b);
   });
   $("back-btn").disabled = idx === 0;
 }
-function finish(){
+function finishQuiz(){
   $("q-bar").style.width = "100%";
   $("q-pct").textContent = "100%";
-  computeAndShow();
+  $("result-body").innerHTML = resultShell(cur.render(answers));
+  showScreen("result-screen");
 }
-
-/* ===== 採点 ===== */
-function sumRange(from, to){
-  let s = 0, n = 0;
-  for (let i = from; i < to; i++){ s += (answers[i] ?? 0); n++; }
-  return s;
-}
-function symptomCount(areaOffset){
-  // 9症状 × 2問: 片方が3以上、または両方2以上で「症状あり」
-  let count = 0; const detail = [];
-  for (let sIdx = 0; sIdx < 9; sIdx++){
-    const i1 = areaOffset + sIdx * 2, i2 = i1 + 1;
-    const v1 = answers[i1] ?? 0, v2 = answers[i2] ?? 0;
-    const present = Math.max(v1, v2) >= 3 || (v1 >= 2 && v2 >= 2);
-    if (present) count++;
-    detail.push({ key: QUESTIONS[i1][1], score: v1 + v2, present });
-  }
-  return { count, detail };
-}
-function levelText(pct){
-  if (pct >= 65) return "かなり強く出ています";
-  if (pct >= 45) return "はっきり出ています";
-  if (pct >= 28) return "やや出ています";
-  return "ほとんど出ていません";
-}
-function computeAndShow(){
-  const aSum = sumRange(0, 18), bSum = sumRange(18, 36), cSum = sumRange(36, 50);
-  const aPct = Math.round(aSum / 72 * 100), bPct = Math.round(bSum / 72 * 100), cPct = Math.round(cSum / 56 * 100);
-  const symA = symptomCount(0), symB = symptomCount(18);
-  // 可能性％：単純な直線ではなく、広がりを持たせた算出（中間の回答でも差が出るように）
-  const raw = 0.42 * aPct + 0.33 * bPct + 0.25 * cPct;
-  let possibility = Math.round(5 + raw * 1.02);
-  if (symA.count >= 5 || symB.count >= 5) possibility += 5;
-  if (symA.count >= 5 && symB.count >= 5) possibility += 3;
-  if (cPct >= 60) possibility += 4;               // 生活への影響が大きい場合の上乗せ
-  if ((answers[36] ?? 0) >= 3) possibility += 3;  // 過集中が強い場合の上乗せ
-  possibility = Math.max(5, Math.min(97, possibility));
-
-  // 判定文
-  let verdict, vsub;
-  if (possibility >= 70){ verdict = "ADHDの傾向が強いタイプです"; vsub = "2領域のうち少なくとも一方で、診断基準の症状数（成人では5つ以上）に届く回答パターンでした。"; }
-  else if (possibility >= 50){ verdict = "ADHDの傾向が見られます"; vsub = "いくつかの症状が日常的に出ている回答パターンでした。困りごとの程度によっては、専門家への相談も選択肢です。"; }
-  else if (possibility >= 32){ verdict = "軽いADHD傾向が見られます"; vsub = "一部の項目に傾向が出ています。特性というより、場面や体調で出やすいタイプかもしれません。"; }
-  else { verdict = "ADHDの傾向は弱いタイプです"; vsub = "今回の回答では、ADHDらしいパターンはほとんど見られませんでした。"; }
-
-  // タイプ判定
-  const aHigh = symA.count >= 5 || aPct >= 60, bHigh = symB.count >= 5 || bPct >= 60;
-  const aMid = aPct >= 35, bMid = bPct >= 35;
-  let typeKey;
-  if (aHigh && bHigh) typeKey = "chaos";
-  else if (aHigh) typeKey = "dreamer";
-  else if (bHigh) typeKey = "accel";
-  else if (aMid || bMid) typeKey = "switcher";
-  else if (cPct >= 40) typeKey = "sensitive";
-  else typeKey = "steady";
-  const type = TYPES[typeKey];
-
-  // ADHDっぽいポイント（症状スコア上位。低スコアでも相対的に高い項目を拾う）
-  const sortedSym = [...symA.detail.map(d => ({...d, area:"A"})), ...symB.detail.map(d => ({...d, area:"B"}))]
-    .sort((x, y) => y.score - x.score);
-  let picks = sortedSym.filter(d => d.score >= 3).slice(0, 5);
-  let relative = false;
-  if (!picks.length){ picks = sortedSym.filter(d => d.score > 0).slice(0, 3); relative = picks.length > 0; }
-  const renderSym = (d) => {
-    const [label, desc] = SYMPTOM_LABELS[d.key];
-    return `<li><b>${label}</b>（${d.area === "A" ? "不注意" : "多動・衝動"}） ― ${desc}</li>`;
-  };
-  let points;
-  if (picks.length && relative){
-    points = "<li>突出して高い項目はありませんでした。強いて言えば、相対的にこのあたりが「っぽい」ポイントです。</li>" + picks.map(renderSym).join("");
-  } else if (picks.length){
-    points = picks.map(renderSym).join("");
-  } else {
-    points = "<li>全項目がほぼゼロでした。ここまで徹底すると、それはそれで一種の才能かもしれません。</li>";
-  }
-
-  // 強み（タイプ共通の枠組み＋回答ベース）
-  const strengths = [];
-  if ((answers[36] ?? 0) >= 2) strengths.push("興味のあることへの<b>過集中</b> ― 没頭したときの生産性と深さは大きな武器です。");
-  if ((answers[47] ?? 0) >= 2) strengths.push("<b>集中力の瞬発力</b> ― ハマったときの吸収と推進は、場面によって強く発揮されます。");
-  if (bPct >= 40) strengths.push("<b>行動量とエネルギー</b> ― 思いついてから動くまでの速さは、多くの場面で強みになります。");
-  if (aPct < 40) strengths.push("<b>注意の安定性</b> ― 日常の細部管理が比較的安定しているのは、土台としての強みです。");
-  strengths.push("<b>パターンの自覚</b> ― 自分の出方を知っていること自体が、環境設計と対策の出発点になります。");
-  const strengthsHtml = strengths.slice(0, 4).map(s => `<li>${s}</li>`).join("");
-
-  // 表示
-  $("r-percent").textContent = possibility;
-  $("r-verdict").textContent = verdict;
-  $("r-verdict-sub").textContent = vsub;
-  $("r-type-name").textContent = type.name;
-  $("r-type-en").textContent = type.en;
-  $("r-type-desc").textContent = type.desc;
-  $("r-a-num").textContent = `${aSum}点（${aPct}%）／ 症状 ${symA.count}/9`;
-  $("r-b-num").textContent = `${bSum}点（${bPct}%）／ 症状 ${symB.count}/9`;
-  $("r-c-num").textContent = `${cSum}点（${cPct}%）`;
-  $("r-a-desc").textContent = `不注意の出方は「${levelText(aPct)}」。成人の診断基準では、この領域の症状が5つ以上・6か月以上続くことが一つの目安です（あなたは${symA.count}つ）。`;
-  $("r-b-desc").textContent = `多動性・衝動性の出方は「${levelText(bPct)}」。同じく症状数の目安は5つ以上です（あなたは${symB.count}つ）。`;
-  $("r-c-desc").textContent = cPct >= 50 ? "傾向が生活の困りごとに結びついている度合いが高めです。対策や相談の優先度は高めと言えます。"
-    : cPct >= 28 ? "傾向が困りごとに結びつく場面が、ある程度ありそうです。"
-    : "傾向があっても、生活への支障としては小さめのようです。今の対処が機能している可能性があります。";
-  $("r-points").innerHTML = points;
-  $("r-strengths").innerHTML = strengthsHtml;
-  $("r-tips").innerHTML = type.tips.map(([h, p]) => `<div class="mini-card"><h4>${h}</h4><p>${p}</p></div>`).join("");
-  show("result-screen");
-  requestAnimationFrame(() => {
-    $("r-a-bar").style.width = aPct + "%";
-    $("r-b-bar").style.width = bPct + "%";
-    $("r-c-bar").style.width = cPct + "%";
-  });
-}
-
-/* ===== イベント ===== */
-$("start-btn").onclick = () => { idx = 0; show("quiz-screen"); renderQuestion(); };
+function goHub(){ showScreen("hub-screen"); }
+function retryModule(){ startModule(); }
+$("start-btn").onclick = startModule;
+$("intro-back").onclick = goHub;
 $("back-btn").onclick = () => { if (idx > 0){ idx--; renderQuestion(); } };
 $("skip-btn").onclick = () => {
   if (answers[idx] === null) answers[idx] = 0;
-  if (idx < QUESTIONS.length - 1){ idx++; renderQuestion(); } else { finish(); }
+  if (idx < cur.questions.length - 1){ idx++; renderQuestion(); } else { finishQuiz(); }
 };
-$("retry-btn").onclick = () => { answers.fill(null); idx = 0; show("intro-screen"); };
-$("pdf-btn").onclick = () => { window.print(); };
+renderHub();
 </script>
 </body>
 </html>
